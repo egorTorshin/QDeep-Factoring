@@ -19,7 +19,7 @@ import functools
 from collections import OrderedDict
 
 import dwavebinarycsp as dbc
-from dwave.system import DWaveSampler, EmbeddingComposite
+from neal import SimulatedAnnealingSampler
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def factor(P):
     sample_time = time.time()
 
     # Set a QPU sampler
-    sampler = EmbeddingComposite(DWaveSampler())
+    sampler = SimulatedAnnealingSampler()
 
     num_reads = 100
     sampleset = sampler.sample(bqm,
@@ -143,7 +143,8 @@ def factor(P):
     output['Results'] = list(results_dict.values())
     output['Number of reads'] = num_reads
 
-    output['Timing']['Actual']['QPU processing time'] = sampleset.info['timing']['qpu_access_time']
+    qpu_time = sampleset.info.get('timing', {}).get('qpu_access_time', None)
+    output['Timing']['Actual']['QPU processing time'] = qpu_time
 
     return output
 
